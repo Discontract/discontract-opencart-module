@@ -3,12 +3,12 @@ class ControllerExtensionModuleDiscontract extends Controller {
 
 	public function install() {
 		$this->load->model('extension/discontract/db');
-		$this->model_extension_discontract_api->install();
+		$this->model_extension_discontract_db->install();
 	}
 
 	public function uninstall() {
 		$this->load->model('extension/discontract/db');
-		$this->model_extension_discontract_api->uninstall();
+		$this->model_extension_discontract_db->uninstall();
 	}
 
 	public function index() {
