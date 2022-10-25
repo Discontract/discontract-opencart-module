@@ -22,6 +22,14 @@ class ControllerExtensionModuleDiscontract extends Controller {
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
 			$this->model_setting_setting->editSetting('module_discontract', $this->request->post);
+			$response = $this->model_extension_discontract_api->getJobs();
+			// var_dump($jobs);
+			$jobs = $response->jobs;
+			$this->model_extension_discontract_db->deleteJobs();
+			for ($i = 0; $i < count($jobs); $i++) {
+				$job = $jobs[$i];
+				$this->model_extension_discontract_db->updateDiscontractJob($job);
+			}
 		}
 
 		$data['action'] = $this->url->link('extension/module/discontract', 'user_token=' . $this->session->data['user_token'], true);
