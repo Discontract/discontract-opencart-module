@@ -1,0 +1,30 @@
+<div>
+  <h1>Discontract services</h1>
+  <button id="discontract_btn">AJAX request</button>
+</div>
+
+<script type="text/javascript"><!--
+console.log('here');
+$(document).ready(() => {
+  console.log('READY');
+  $(document).on('click', () => {
+    discontractPerformRequest('getsuggestions', {}, (data) => {
+      console.log(data);
+    });
+  });
+})
+
+function discontractPerformRequest(action, params, callback) {
+  const url = 'index.php?route=extension/module/discontract/' + action;
+  params.action = action;
+  params.ajax = true;
+  $.ajax({
+    type: 'GET',
+    dataType : 'JSON',
+    url: url,
+    cache: false,
+    data: params,
+    success: callback
+  });
+}
+//--></script>
