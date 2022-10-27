@@ -3,6 +3,7 @@
 class ModelExtensionDiscontractDb extends Model 
 {
   public function install() {
+    // create jobs table
     $this->db->query("
       CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "discontract_job` (
         `discontract_job_id` VARCHAR(255) NOT NULL,
@@ -11,6 +12,10 @@ class ModelExtensionDiscontractDb extends Model
         PRIMARY KEY (`discontract_job_id`)
       ) ENGINE=MyISAM DEFAULT COLLATE=utf8_general_ci
     ");
+    // create discontract services category
+    // create or update address option
+    // create or update discontract products (with option)
+    // update product_id_discontract_job relation
   }
 
   public function uninstall() {
