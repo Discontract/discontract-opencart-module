@@ -4,11 +4,15 @@ class ControllerExtensionModuleDiscontract extends Controller {
 	public function install() {
 		$this->load->model('extension/discontract/db');
 		$this->model_extension_discontract_db->install();
+		$this->load->model('setting/event');
+		$this->model_setting_event->addEvent('discontract_add_to_cart', 'catalog/controller/checkout/cart/add/after', 'extension/module/discontract/addToCart');
 	}
 
 	public function uninstall() {
 		$this->load->model('extension/discontract/db');
 		$this->model_extension_discontract_db->uninstall();
+		$this->load->model('setting/event');
+		$this->model_setting_event->deleteEventByCode('discontract_add_to_cart');
 	}
 
 	public function index() {

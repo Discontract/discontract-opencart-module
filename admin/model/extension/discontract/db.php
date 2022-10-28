@@ -14,8 +14,8 @@ class ModelExtensionDiscontractDb extends Model
     ");
     // create discontract services category
     // create or update address option
-    // create or update discontract products (with option)
-    // update product_id_discontract_job relation
+    // create or update discontract products (with option) (add column discontract_job_id)
+    
   }
 
   public function uninstall() {

@@ -12,4 +12,9 @@ class ControllerExtensionModuleDiscontract extends Controller {
     $this->response->addHeader('Content-Type: application/json');
     $this->response->setOutput(json_encode($data));
   }
+
+  public function addToCart() {
+    // var_dump($_POST['discontract_job']);
+    // die();
+  }
 }
