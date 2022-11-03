@@ -27,6 +27,7 @@ class ControllerExtensionModuleDiscontract extends Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
 			$this->model_setting_setting->editSetting('module_discontract', $this->request->post);
 			$response = $this->model_extension_discontract_api->getJobs();
+			// die();
 			// var_dump($jobs);
 			$jobs = $response->jobs;
 			$this->model_extension_discontract_db->deleteJobs();
@@ -42,15 +43,21 @@ class ControllerExtensionModuleDiscontract extends Controller {
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
+		$data['environments'] = array(
+			array('name' => 'local', 'value' => 'http://localhost:8020/api/v1'),
+			array('name' => 'staging', 'value' => 'https://b2b-stage.discontract.com/api/v1'),
+			array('name' => 'production', 'value' => 'https://b2b.discontract.com/api/v1'),
+		);
 
-		if (isset($this->request->post['module_discontract_status'])) {
-			$data['module_discontract_status'] = $this->request->post['module_discontract_status'];
-			$data['module_discontract_api_key'] = $this->request->post['module_discontract_api_key'];
-		} else {
-			$data['module_discontract_status'] = $this->config->get('module_discontract_status');
-			$data['module_discontract_api_key'] = $this->config->get('module_discontract_api_key');
+		$keys = array('module_discontract_status', 'module_discontract_api_key', 'module_discontract_environment');
+		foreach ($keys as $key) {
+			if (isset($this->request->post[$key])) {
+				$data[$key] = $this->request->post[$key];
+			} else {
+				$data[$key] = $this->config->get($key);
+			}
 		}
-
+		
 		$this->response->setOutput($this->load->view('extension/module/discontract', $data));
 	}
 }

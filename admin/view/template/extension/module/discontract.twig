@@ -17,6 +17,16 @@
         <div class="panel-body">
           <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-module" class="form-horizontal">
             <div class="form-group">
+              <label class="col-sm-2 control-label" for="module_discontract_environment">{{ form_environment }}</label>
+              <div class="col-sm-10">
+                <select name="module_discontract_environment" id="module_discontract_environment" class="form-control">
+                {% for env in environments %}
+                  <option value="{{env.value}}" {%if env.value == module_discontract_environment %}selected="selected"{%endif%}>{{ env.name }}</option>
+                {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
               <label class="col-sm-2 control-label" for="module_discontract_api_key">{{ form_api_key }}</label>
               <div class="col-sm-10">
                 <input type="text" name="module_discontract_api_key" value="{{ module_discontract_api_key }}" id="module_discontract_api_key" class="form-control" />
@@ -26,7 +36,15 @@
               </div>
             </div>
             <div class="form-group">
-              <label class="col-sm-2 control-label" for="module_discontract_status">{{ entry_status }}</label>
+              <label class="col-sm-2 control-label" for="module_discontract_category">{{ form_category }}</label>
+              <div class="col-sm-10">
+                <select name="module_discontract_category" id="module_discontract_category" class="form-control">
+                  <option value="1" selected="selected">{{ text_enabled }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="module_discontract_status">{{ form_status }}</label>
               <div class="col-sm-10">
                 <select name="module_discontract_status" id="module_discontract_status" class="form-control">
                   {% if module_discontract_status %}

@@ -6,10 +6,12 @@ class ModelExtensionDiscontractApi extends Model
   {
     $this->load->model('setting/setting');
     $apiKey = $this->config->get('module_discontract_api_key');
+    $env = $this->config->get('module_discontract_environment');
     if (isset($this->request->post['module_discontract_api_key'])) {
       $apiKey = $this->request->post['module_discontract_api_key'];
+      $env = $this->request->post['module_discontract_environment'];
     }
-    $apiUrl = 'https://b2b-stage.discontract.com/api/v1';
+    $apiUrl = $env;
     $curl = curl_init();
     curl_setopt_array($curl, array(
       CURLOPT_URL => $apiUrl . $path,
