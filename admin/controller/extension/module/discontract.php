@@ -43,13 +43,21 @@ class ControllerExtensionModuleDiscontract extends Controller {
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
 		$data['categories'] = $this->model_extension_discontract_db->getCategories();
+		$data['statuses'] = $this->model_extension_discontract_db->getStatuses();
 		$data['environments'] = array(
 			array('name' => 'local', 'value' => 'http://localhost:8020/api/v1'),
 			array('name' => 'staging', 'value' => 'https://b2b-stage.discontract.com/api/v1'),
 			array('name' => 'production', 'value' => 'https://b2b.discontract.com/api/v1'),
 		);
 
-		$keys = array('module_discontract_status', 'module_discontract_api_key', 'module_discontract_environment', 'module_discontract_category');
+		$keys = array(
+			'module_discontract_status',
+			'module_discontract_api_key',
+			'module_discontract_environment',
+			'module_discontract_category',
+			'module_discontract_statuses_purchased',
+			'module_discontract_statuses_delivered',
+		);
 		foreach ($keys as $key) {
 			if (isset($this->request->post[$key])) {
 				$data[$key] = $this->request->post[$key];

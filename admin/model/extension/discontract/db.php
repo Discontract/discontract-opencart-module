@@ -26,6 +26,14 @@ class ModelExtensionDiscontractDb extends Model
     return $resp->rows;
   }
 
+  public function getStatuses() {
+    $language = (int)$this->config->get('config_language_id');
+    $resp = $this->db->query(
+      sprintf("SELECT * FROM %s WHERE language_id = %d", DB_PREFIX."order_status", $language)
+    );
+    return $resp->rows;
+  }
+
   public function uninstall() {
     $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "discontract_job`");
   }

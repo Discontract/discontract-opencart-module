@@ -46,6 +46,26 @@
               </div>
             </div>
             <div class="form-group">
+              <label class="col-sm-2 control-label" for="module_discontract_statuses_purchased[]">{{ form_option_purchased }}</label>
+              <div class="col-sm-10">
+                <select name="module_discontract_statuses_purchased[]" id="module_discontract_statuses_purchased" class="form-control" multiple>
+                  {% for status in statuses %}
+                    <option value="{{status.order_status_id}}" {%if status.order_status_id in module_discontract_statuses_purchased %}selected="selected"{%endif%}>{{ status.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="module_discontract_statuses_delivered[]">{{ form_option_delivered }}</label>
+              <div class="col-sm-10">
+                <select name="module_discontract_statuses_delivered[]" id="module_discontract_statuses_delivered" class="form-control" multiple>
+                  {% for status in statuses %}
+                    <option value="{{status.order_status_id}}" {%if status.order_status_id in module_discontract_statuses_delivered %}selected="selected"{%endif%}>{{ status.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
               <label class="col-sm-2 control-label" for="module_discontract_status">{{ form_status }}</label>
               <div class="col-sm-10">
                 <select name="module_discontract_status" id="module_discontract_status" class="form-control">
