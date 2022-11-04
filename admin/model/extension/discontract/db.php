@@ -36,6 +36,7 @@ class ModelExtensionDiscontractDb extends Model
   }
 
   public function uninstall() {
+    // TODO: need to remove product description and category connections
     $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "discontract_job`");
     $this->db->query(sprintf("DELETE FROM %s WHERE discontract_job_id IS NOT NULL", DB_PREFIX."product"));
     $this->db->query(sprintf("ALTER TABLE %s DROP COLUMN discontract_job_id", DB_PREFIX."product"));
@@ -43,12 +44,12 @@ class ModelExtensionDiscontractDb extends Model
 
   public function deleteJobs()
   {
-    $this->db->query(sprintf("DELETE FROM %s WHERE discontract_job_id IS NOT NULL", DB_PREFIX."product"));
+    // $this->db->query(sprintf("DELETE FROM %s WHERE discontract_job_id IS NOT NULL", DB_PREFIX."product"));
     $sql = 'DELETE FROM ' . DB_PREFIX . 'discontract_job';
     $this->db->query($sql);
   }
 
-  public function updateDiscontractJob($job)
+  public function updateDiscontractJob($job, $categoryId)
   {
     if (!property_exists($job, 'title')) {
       return;
@@ -57,7 +58,9 @@ class ModelExtensionDiscontractDb extends Model
     $jobId = $this->db->escape($job->id);
     $sql = sprintf('SELECT * FROM `' . DB_PREFIX . 'product` WHERE discontract_job_id = "%s"', $jobId);
     $query = $this->db->query($sql);
+    $productId = '';
     if ($query->row) {
+      $productId = $query->row['product_id'];
       $sql = sprintf(
         'UPDATE %s SET price = %f WHERE discontract_job_id = "%s"',
         DB_PREFIX . 'discontract_job',
@@ -85,6 +88,18 @@ class ModelExtensionDiscontractDb extends Model
       );
       $this->db->query($sql);
     }
+    $sql = sprintf('SELECT * FROM `' . DB_PREFIX . 'product_to_category` WHERE product_id = %d AND category_id = %d', (int)$productId, (int)$categoryId);
+    $query = $this->db->query($sql);
+    if (!$query->row) {
+      $sql = sprintf(
+        'INSERT INTO %s (product_id, category_id) VALUES (%d, %d)',
+        DB_PREFIX . 'product_to_category',
+        $productId,
+        $categoryId
+      );
+      $this->db->query($sql);
+    }
+    
     $jobTitleLt = $this->db->escape($job->title);
     $sql = sprintf('SELECT * FROM `' . DB_PREFIX . 'discontract_job` WHERE discontract_job_id = "%s"', $jobId);
     $query = $this->db->query($sql);

@@ -32,7 +32,7 @@ class ControllerExtensionModuleDiscontract extends Controller {
 			$this->model_extension_discontract_db->deleteJobs();
 			for ($i = 0; $i < count($jobs); $i++) {
 				$job = $jobs[$i];
-				$this->model_extension_discontract_db->updateDiscontractJob($job);
+				$this->model_extension_discontract_db->updateDiscontractJob($job, $this->request->post['module_discontract_category']);
 			}
 		}
 
