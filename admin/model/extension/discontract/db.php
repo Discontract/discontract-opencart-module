@@ -43,6 +43,7 @@ class ModelExtensionDiscontractDb extends Model
 
   public function deleteJobs()
   {
+    $this->db->query(sprintf("DELETE FROM %s WHERE discontract_job_id IS NOT NULL", DB_PREFIX."product"));
     $sql = 'DELETE FROM ' . DB_PREFIX . 'discontract_job';
     $this->db->query($sql);
   }
@@ -52,7 +53,38 @@ class ModelExtensionDiscontractDb extends Model
     if (!property_exists($job, 'title')) {
       return;
     }
+    $language = (int)$this->config->get('config_language_id');
     $jobId = $this->db->escape($job->id);
+    $sql = sprintf('SELECT * FROM `' . DB_PREFIX . 'product` WHERE discontract_job_id = "%s"', $jobId);
+    $query = $this->db->query($sql);
+    if ($query->row) {
+      $sql = sprintf(
+        'UPDATE %s SET price = %f WHERE discontract_job_id = "%s"',
+        DB_PREFIX . 'discontract_job',
+        (float)($job->price->unitPrice / 100),
+        $jobId
+      );
+      $this->db->query($sql);
+    } else {
+      $sql = sprintf(
+        'INSERT INTO %s (discontract_job_id, price, model, quantity, subtract, date_available, date_added, date_modified, shipping) VALUES ("%s", %f, "Discontract", 100, 0, CURDATE(), CURDATE(), CURDATE(), 0)',
+        DB_PREFIX . 'product',
+        $jobId,
+        (int)($job->price->unitPrice / 100)
+      );
+      $this->db->query($sql);
+      $productId = $this->db->getLastId();
+      $sql = sprintf(
+        'INSERT INTO %s (product_id, name, meta_title, description, language_id) VALUES (%d, "%s", "%s", "%s", %d)',
+        DB_PREFIX . 'product_description',
+        $productId,
+        $this->db->escape($job->title),
+        $this->db->escape($job->title),
+        "",
+        $language
+      );
+      $this->db->query($sql);
+    }
     $jobTitleLt = $this->db->escape($job->title);
     $sql = sprintf('SELECT * FROM `' . DB_PREFIX . 'discontract_job` WHERE discontract_job_id = "%s"', $jobId);
     $query = $this->db->query($sql);
