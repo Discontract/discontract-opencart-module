@@ -86,7 +86,7 @@
     <input type="hidden" id="discontract_cart" name="discontract_cart" />
     {% for job in jobs %}
       <div class="discontract-job">
-        <input type="radio" class="disc-radio-choice" {{job.selected}} name="id_discontract_job" value="{{job.job_id}}">
+        <input type="radio" class="disc-radio-choice" {{job.selected}} name="id_discontract_job" value="{{job.discontract_job_id}}">
         <span class="disc-price-block">
           <input type="hidden" class="discontract_product_id" name="discontract_product_id" value="{{job.product_id}}" />
           <span class="discontract-price">{{job.price}}</span><span class="discontract-asterisk">*</span> - </span>
@@ -161,7 +161,7 @@ const DISCONTRACT_MODULE = function() {
           item.productId = DISCONTRACT_PRODUCT_ID;
           item.jobId = $("input[name=id_discontract_job]:checked").val();;
           document.getElementById('disc-postcode-autocomplete').style.display = 'none';
-          discontractPerformRequest('getPrice', item, function(result) {
+          discontractPerformRequest('price', item, function(result) {
             result.shopProductId = DISCONTRACT_PRODUCT_ID;
             result.productName = DISCONTRACT_PRODUCT_NAME;
             const $priceBlock = $("input[name=id_discontract_job]:checked").next();
