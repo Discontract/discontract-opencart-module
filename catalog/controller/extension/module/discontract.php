@@ -12,6 +12,9 @@ class ControllerExtensionModuleDiscontract extends Controller {
       $data = array();
       $data['jobs'] = $products;
       $data['jobs'][0]['selected'] = 'checked';
+      for ($i = 0; $i < count($data['jobs']); $i++) {
+        $data['jobs'][$i]['price'] = number_format($data['jobs'][$i]['price'], 2);
+      }
       return $this->load->view('extension/module/discontract', $data);
     }
 	}

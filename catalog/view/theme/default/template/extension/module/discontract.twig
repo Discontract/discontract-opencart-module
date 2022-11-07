@@ -89,8 +89,8 @@
         <input type="radio" class="disc-radio-choice" {{job.selected}} name="id_discontract_job" value="{{job.discontract_job_id}}">
         <span class="disc-price-block">
           <input type="hidden" class="discontract_product_id" name="discontract_product_id" value="{{job.product_id}}" />
-          <span class="discontract-price">{{job.price}}</span><span class="discontract-asterisk">*</span> - </span>
-        {{job.product_id}}
+          <span class="discontract-price">{{job.price}}€</span><span class="discontract-asterisk">*</span> - </span>
+        {{job.name}}
       </div>
     {% endfor %}
     <div id="disc-explanation-block">*kaina gali kisti nuo pasirinkto atvykimo adreso</div>
@@ -167,7 +167,7 @@ const DISCONTRACT_MODULE = function() {
             const $priceBlock = $("input[name=id_discontract_job]:checked").next();
             result.productId = $priceBlock.find('.discontract_product_id').val();
             document.getElementById('discontract_cart').value = JSON.stringify(result);
-            $('button.add-to-cart').prop('disabled', false);
+            $('#button-cart').prop('disabled', false);
             $priceBlock.css('display', 'inline');
             $priceBlock.find('.discontract-price').text((result.price.total / 100).toFixed(2) + ' €');
             document.getElementById('disc-postcode-input').value = item.postCode + ' - ' + item.description;
@@ -182,7 +182,7 @@ const DISCONTRACT_MODULE = function() {
 
   document.getElementById('disc-postcode-input').addEventListener('keyup', function(event) {
     callOnce(function() {
-      $('button.add-to-cart').prop('disabled', true);
+      $('#button-cart').prop('disabled', true);
       const value = event.target.value.trim();
       if (value.length > 1) {
         document.getElementById('discontract-loader').style.display = 'block';
@@ -191,14 +191,14 @@ const DISCONTRACT_MODULE = function() {
     });
   });
   document.getElementById('disc-postcode-input').addEventListener('focus', function(event) {
-    $('button.add-to-cart').prop('disabled', true);
+    $('#button-cart').prop('disabled', true);
     document.getElementById('disc-postcode-input').value = '';
     document.getElementById('discontract_cart').value = '';
   });
   document.querySelectorAll("input[name='id_discontract_job']").forEach((input) => {
     input.addEventListener('change', function() {
       $('.disc-price-block').css('display', 'none');
-      $('button.add-to-cart').prop('disabled', true);
+      $('#button-cart').prop('disabled', true);
       document.getElementById('disc-postcode-input').value = '';
       document.getElementById('discontract_cart').value = '';
     });
@@ -216,7 +216,7 @@ const DISCONTRACT_MODULE = function() {
       document.getElementById('disc-postcode-autocomplete').style.display = 'none';
       $('.discontract-asterisk').css('display', 'none');
       document.getElementById('disc-postcode-input').focus();
-      $('button.add-to-cart').prop('disabled', true);
+      $('#button-cart').prop('disabled', true);
     } else {
       $('.disc-price-block').css('display', 'inline');
       $('.disc-radio-choice').css('display', 'none');
@@ -224,7 +224,7 @@ const DISCONTRACT_MODULE = function() {
       document.getElementById('disc-explanation-block').style.display = 'block';
       document.getElementById('discontract_cart').value = '';
       $('.discontract-asterisk').css('display', 'inline');
-      $('button.add-to-cart').prop('disabled', false);
+      $('#button-cart').prop('disabled', false);
     }
   });
   checkbox.checked = false;
