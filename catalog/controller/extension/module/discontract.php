@@ -10,6 +10,7 @@ class ControllerExtensionModuleDiscontract extends Controller {
     // var_dump($products);
     if (count($products) > 0) {
       $data = array();
+      $data['jobs'] = $products;
       return $this->load->view('extension/module/discontract', $data);
     }
 	}
