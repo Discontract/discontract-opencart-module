@@ -105,7 +105,7 @@
   </div>
 </div>
 <script type="text/javascript">
-  const DISCONTRACT_MODULE_LINK = "{{'url'}}";
+  const DISCONTRACT_MODULE_LINK = "{{'index.php?route=extension/module/discontract/'}}";
   const DISCONTRACT_PRODUCT_ID = {{0}};
   const DISCONTRACT_PRODUCT_NAME = "{{'SING'}}";
 </script>
@@ -123,8 +123,7 @@ const DISCONTRACT_MODULE = function() {
     window.callOnceTimers[timerId] = timer;
   }
   function discontractPerformRequest(action, params, callback) {
-    const url = DISCONTRACT_MODULE_LINK;
-    params.action = action;
+    const url = DISCONTRACT_MODULE_LINK + action;
     params.ajax = true;
     $.ajax({
       type: 'POST',
