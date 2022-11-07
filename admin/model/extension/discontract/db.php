@@ -51,6 +51,7 @@ class ModelExtensionDiscontractDb extends Model
 
   public function updateDiscontractJob($job, $categoryId)
   {
+    // TODO: create product_to_store relation
     if (!property_exists($job, 'title')) {
       return;
     }

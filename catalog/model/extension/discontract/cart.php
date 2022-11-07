@@ -1,6 +1,33 @@
 <?php
 
 class ModelExtensionDiscontractCart extends Model {
+  public function getDiscontractProducsByProductId($productId, $discontractCategoryId) {
+    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE product_id = %d", DB_PREFIX."product", (int)$productId));
+    $product = $query->row;
+    if ($product['discontract_job_id']) {
+      return array($product);
+    }
+    $products = array();
+    $productCategories = ($this->db->query(sprintf("SELECT * FROM %s WHERE product_id = %d", DB_PREFIX."product_to_category", (int)$productId)))->rows;
+    $discontractProductsCategories = ($this->db->query(sprintf("SELECT * FROM %s WHERE category_id = %d", DB_PREFIX."product_to_category", (int)$discontractCategoryId)))->rows;
+    foreach ($productCategories as $category) {
+      if ((int)$category['category_id'] === (int)$discontractCategoryId) {
+        continue;
+      }
+      $productsInCategory = ($this->db->query(sprintf("SELECT * FROM %s WHERE category_id = %d", DB_PREFIX."product_to_category", (int)$category['category_id'])))->rows;
+      foreach ($productsInCategory as $productInCategory) {
+        foreach ($discontractProductsCategories as $discontractProductCategory) {
+          if ($productInCategory['product_id'] === $discontractProductCategory['product_id']) {
+            $query = $this->db->query(sprintf("SELECT * FROM %s WHERE product_id = %d", DB_PREFIX."product", (int)$discontractProductCategory['product_id']));
+            $products[] = $query->row;
+            // $products[] = $productInCategory['product_id'];
+          }
+        }
+      }
+    }
+
+    return $products;
+  }
   public function addOptionValue($discontract_product_id, $address, $price, $quantity) {
     $language = (int)$this->config->get('config_language_id');
     $query = $this->db->query(sprintf("SELECT * FROM %s WHERE type = 'discontract_arrival_cost'", DB_PREFIX."option"));
