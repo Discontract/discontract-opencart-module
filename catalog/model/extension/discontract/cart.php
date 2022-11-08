@@ -60,7 +60,7 @@ class ModelExtensionDiscontractCart extends Model {
       "', option_id = '" . (int)$option_id .
       "', name = '" . $this->db->escape($address) . "'");
     
-    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE option_id = %d", DB_PREFIX."product_option", $option_id));
+    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE option_id = %d AND product_id = %d", DB_PREFIX."product_option", $option_id, $discontract_product_id));
     $product_option_id = 0;
     if ($query->row) {
       $product_option_id = $query->row['product_option_id'];
@@ -83,6 +83,6 @@ class ModelExtensionDiscontractCart extends Model {
       "', weight = '" . (float)0 .
       "', weight_prefix = '+'");
     
-    return array($product_option_id => $this->db->getLastId());
+    return array($product_option_id."" => $this->db->getLastId()."");
   }
 }
