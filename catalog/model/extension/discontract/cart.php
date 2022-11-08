@@ -1,6 +1,12 @@
 <?php
 
 class ModelExtensionDiscontractCart extends Model {
+  public function getProduct($productId) {
+    $language = (int)$this->config->get('config_language_id');
+    $query = $this->db->query(sprintf("SELECT * FROM %s AS p LEFT JOIN %s AS pd ON (pd.product_id = p.product_id) WHERE p.product_id = %d AND pd.language_id = %d", DB_PREFIX."product", DB_PREFIX."product_description", (int)$productId, $language));
+    return $query->row;
+  }
+
   public function getDiscontractProducsByProductId($productId, $discontractCategoryId) {
     $language = (int)$this->config->get('config_language_id');
     $query = $this->db->query(sprintf("SELECT * FROM %s WHERE product_id = %d", DB_PREFIX."product", (int)$productId));
@@ -19,16 +25,15 @@ class ModelExtensionDiscontractCart extends Model {
       foreach ($productsInCategory as $productInCategory) {
         foreach ($discontractProductsCategories as $discontractProductCategory) {
           if ($productInCategory['product_id'] === $discontractProductCategory['product_id']) {
-            $query = $this->db->query(sprintf("SELECT * FROM %s AS p LEFT JOIN %s AS pd ON (pd.product_id = p.product_id) WHERE p.product_id = %d AND pd.language_id = %d", DB_PREFIX."product", DB_PREFIX."product_description", (int)$discontractProductCategory['product_id'], $language));
-            $products[] = $query->row;
+            $products[] = $this->getProduct((int)$discontractProductCategory['product_id']);
             // $products[] = $productInCategory['product_id'];
           }
         }
       }
     }
-
     return $products;
   }
+
   public function addOptionValue($discontract_product_id, $address, $price, $quantity) {
     $language = (int)$this->config->get('config_language_id');
     $query = $this->db->query(sprintf("SELECT * FROM %s WHERE type = 'discontract_arrival_cost'", DB_PREFIX."option"));

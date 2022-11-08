@@ -10,6 +10,7 @@ class ControllerExtensionModuleDiscontract extends Controller {
     // var_dump($products);
     if (count($products) > 0) {
       $data = array();
+      $data['product'] = $this->model_extension_discontract_cart->getProduct($productId);
       $data['jobs'] = $products;
       $data['jobs'][0]['selected'] = 'checked';
       for ($i = 0; $i < count($data['jobs']); $i++) {
@@ -48,8 +49,20 @@ class ControllerExtensionModuleDiscontract extends Controller {
     if (property_exists($output, 'error')) {
       return;
     }
+    $discontractCartEncoded = $this->request->post['discontract_cart'];
+    $quantity = (int)$this->request->post['quantity'];
+    if (!$discontractCartEncoded) {
+      return;
+    }
+    $discontractCart = json_decode(htmlspecialchars_decode($discontractCartEncoded));
+
     $this->load->model('extension/discontract/cart');
-    $options = $this->model_extension_discontract_cart->addOptionValue(50, 'Gedimino pr. 5', 49.99, 1);
-    $this->cart->add(50, 1, $options);
+    $options = $this->model_extension_discontract_cart->addOptionValue(
+      $discontractCart->productId,
+      $discontractCart->location->description,
+      $discontractCart->price->arrivalCost / 100,
+      $quantity
+    );
+    $this->cart->add($discontractCart->productId, $quantity, $options);
   }
 }
