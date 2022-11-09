@@ -44,7 +44,7 @@ class ControllerExtensionModuleDiscontract extends Controller {
     $this->response->setOutput(json_encode($response));
   }
 
-  private function syncDiscontractCart() {
+  public function syncDiscontractCart() {
     $this->load->model('extension/discontract/cart');
     $cartId = $this->db->escape($this->session->getId());
     $this->model_extension_discontract_cart->detachDiscontractCart($cartId);
@@ -78,21 +78,13 @@ class ControllerExtensionModuleDiscontract extends Controller {
     }
   }
 
-  // public function editCartItem() {
-  //   var_dump('test');
-  //   die('fool');
-  //   $this->syncDiscontractCart();
-  // }
-
   // public function removeCartItem() {
-  //   var_dump('test');
-  //   die('fool');
-  //   $this->syncDiscontractCart();
+  // hooking into add/remove does not work because redirect is done before that
   // }
 
   public function addToCart() {
     $output = json_decode($this->response->getOutput());
-    if (property_exists($output, 'error')) {
+    if (property_exists($output, 'error') || !array_key_exists('discontract_cart', $this->request->post)) {
       return;
     }
     $discontractCartEncoded = htmlspecialchars_decode($this->request->post['discontract_cart']);

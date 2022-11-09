@@ -88,7 +88,7 @@ class ModelExtensionDiscontractDb extends Model
         'INSERT INTO %s (discontract_job_id, price, model, quantity, subtract, date_available, date_added, date_modified, shipping) VALUES ("%s", %f, "Discontract", 100, 0, CURDATE(), CURDATE(), CURDATE(), 0)',
         DB_PREFIX . 'product',
         $jobId,
-        (int)($job->price->unitPrice / 100)
+        (float)($job->price->unitPrice / 100)
       );
       $this->db->query($sql);
       $productId = $this->db->getLastId();
@@ -100,6 +100,14 @@ class ModelExtensionDiscontractDb extends Model
         $this->db->escape($job->title),
         "",
         $language
+      );
+      $this->db->query($sql);
+      $storeId = $this->config->get('config_store_id');
+      $sql = sprintf(
+        'INSERT INTO %s (product_id, store_id) VALUES (%d, %d)',
+        DB_PREFIX . 'product_to_store',
+        $productId,
+        $storeId
       );
       $this->db->query($sql);
     }
