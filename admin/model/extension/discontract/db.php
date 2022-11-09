@@ -12,6 +12,17 @@ class ModelExtensionDiscontractDb extends Model
         PRIMARY KEY (`discontract_job_id`)
       ) ENGINE=MyISAM DEFAULT COLLATE=utf8_general_ci
     ");
+    // create carts table
+    $this->db->query("
+    CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "discontract_cart` (
+        `opencart_cart_id` VARCHAR(255) NOT NULL,
+        `discontract_cart_id` VARCHAR(255) NOT NULL,
+        `status` VARCHAR(255) NOT NULL,
+        PRIMARY KEY (`discontract_cart_id`)
+      ) ENGINE=MyISAM DEFAULT COLLATE=utf8_general_ci
+    ");
+    $this->db->query(sprintf("ALTER TABLE %s ADD parent_product_id INT(11)", DB_PREFIX."cart"));
+    $this->db->query(sprintf("ALTER TABLE %s ADD discontract_item VARCHAR(2550)", DB_PREFIX."cart"));
     $this->db->query(sprintf("ALTER TABLE %s ADD discontract_job_id VARCHAR(255)", DB_PREFIX."product"));
     // create discontract services category
     // create or update address option
@@ -38,8 +49,11 @@ class ModelExtensionDiscontractDb extends Model
   public function uninstall() {
     // TODO: need to remove product description and category connections
     $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "discontract_job`");
+    $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "discontract_cart`");
     $this->db->query(sprintf("DELETE FROM %s WHERE discontract_job_id IS NOT NULL", DB_PREFIX."product"));
     $this->db->query(sprintf("ALTER TABLE %s DROP COLUMN discontract_job_id", DB_PREFIX."product"));
+    $this->db->query(sprintf("ALTER TABLE %s DROP COLUMN discontract_item", DB_PREFIX."cart"));
+    $this->db->query(sprintf("ALTER TABLE %s DROP COLUMN parent_product_id", DB_PREFIX."cart"));
   }
 
   public function deleteJobs()

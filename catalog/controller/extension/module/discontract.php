@@ -44,6 +44,14 @@ class ControllerExtensionModuleDiscontract extends Controller {
     $this->response->setOutput(json_encode($response));
   }
 
+  private function syncDiscontractCart() {
+    
+  }
+
+  public function editCart() {
+    $this->syncDiscontractCart();
+  }
+
   public function addToCart() {
     $output = json_decode($this->response->getOutput());
     if (property_exists($output, 'error')) {
@@ -64,5 +72,6 @@ class ControllerExtensionModuleDiscontract extends Controller {
       $quantity
     );
     $this->cart->add($discontractCart->productId, $quantity, $options);
+    $this->syncDiscontractCart();
   }
 }
