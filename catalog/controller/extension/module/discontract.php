@@ -45,24 +45,62 @@ class ControllerExtensionModuleDiscontract extends Controller {
   }
 
   private function syncDiscontractCart() {
-    
+    $this->load->model('extension/discontract/cart');
+    $cartId = $this->db->escape($this->session->getId());
+    $this->model_extension_discontract_cart->detachDiscontractCart($cartId);
+    $products = $this->model_extension_discontract_cart->getDiscontractProductsForCurrentCart($cartId);
+    if (count($products) == 0) {
+      return;
+    }
+    // TODO: do not detach/attach in case carts are exactly the same
+    $jobItems = array();
+    for ($i = 0; $i < count($products); $i++) {
+      $c = $products[$i];
+      $cartItemId = $c['cart_id'];
+      $quantity = $c['quantity'];
+      $jobInfo = json_decode($c['discontract_item']);
+      $job = new stdClass();
+      $job->jobId = $jobInfo->jobId;
+      $job->amount = (int)$quantity;
+      $job->productName = $jobInfo->productName;
+      $job->location = $jobInfo->location;
+      $jobItems[] = $job;
+      $job->externalItemId = $cartItemId;
+    }
+    $this->load->model('extension/discontract/api');
+    $response = $this->model_extension_discontract_api->createCart($jobItems, $cartId);
+    $this->model_extension_discontract_cart->attachDiscontractCart($cartId, $response->cartId, $response->status);
+    for ($i = 0; $i < count($response->items); $i++) {
+      $order = $response->items[$i];
+      // TODO: also update speicific prices in case there is an unexpected price change
+      $this->model_extension_discontract_cart->updateOptionPrice($order->externalItemId, ($order->price->arrivalCost / 100 / $order->amount));
+      $this->model_extension_discontract_cart->setDiscontractItemInfo($order->externalItemId, json_encode($order));
+    }
   }
 
-  public function editCart() {
-    $this->syncDiscontractCart();
-  }
+  // public function editCartItem() {
+  //   var_dump('test');
+  //   die('fool');
+  //   $this->syncDiscontractCart();
+  // }
+
+  // public function removeCartItem() {
+  //   var_dump('test');
+  //   die('fool');
+  //   $this->syncDiscontractCart();
+  // }
 
   public function addToCart() {
     $output = json_decode($this->response->getOutput());
     if (property_exists($output, 'error')) {
       return;
     }
-    $discontractCartEncoded = $this->request->post['discontract_cart'];
+    $discontractCartEncoded = htmlspecialchars_decode($this->request->post['discontract_cart']);
     $quantity = (int)$this->request->post['quantity'];
     if (!$discontractCartEncoded) {
       return;
     }
-    $discontractCart = json_decode(htmlspecialchars_decode($discontractCartEncoded));
+    $discontractCart = json_decode($discontractCartEncoded);
 
     $this->load->model('extension/discontract/cart');
     $options = $this->model_extension_discontract_cart->addOptionValue(
@@ -72,6 +110,9 @@ class ControllerExtensionModuleDiscontract extends Controller {
       $quantity
     );
     $this->cart->add($discontractCart->productId, $quantity, $options);
+    $cartRowId = $this->db->getLastId();
+    // var_dump($cartId);
+    $this->model_extension_discontract_cart->setDiscontractItemInfo($cartRowId, $discontractCartEncoded);
     $this->syncDiscontractCart();
   }
 }

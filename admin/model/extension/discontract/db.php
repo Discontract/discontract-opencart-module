@@ -78,7 +78,7 @@ class ModelExtensionDiscontractDb extends Model
       $productId = $query->row['product_id'];
       $sql = sprintf(
         'UPDATE %s SET price = %f WHERE discontract_job_id = "%s"',
-        DB_PREFIX . 'discontract_job',
+        DB_PREFIX . 'product',
         (float)($job->price->unitPrice / 100),
         $jobId
       );

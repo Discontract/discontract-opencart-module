@@ -7,6 +7,35 @@ class ModelExtensionDiscontractCart extends Model {
     return $query->row;
   }
 
+  public function setDiscontractItemInfo($cartId, $info) {
+    // $session = $this->db->escape($this->session->getId());
+    $this->db->query(sprintf("UPDATE %s SET discontract_item='%s' WHERE cart_id = %d",
+      DB_PREFIX."cart", $this->db->escape($info), (int)$cartId));
+  }
+
+  public function detachDiscontractCart($cartId) {
+    $this->db->query(sprintf("DELETE FROM %s WHERE opencart_cart_id='%s'",
+      DB_PREFIX."discontract_cart", $this->db->escape($cartId)));
+  }
+
+  public function attachDiscontractCart($opencartId, $discontractCartId, $status) {
+    $this->db->query(sprintf("INSERT INTO %s SET opencart_cart_id='%s', discontract_cart_id='%s', status='%s'",
+      DB_PREFIX."discontract_cart", $this->db->escape($opencartId), $this->db->escape($discontractCartId), $this->db->escape($status)));
+  }
+
+  public function updateOptionPrice($cartRowId, $price) {
+    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE cart_id = %d", DB_PREFIX."cart", (int)$cartRowId));
+    $cartRow = $query->row;
+    $optionValueId = array_values((array)json_decode($cartRow['option']))[0];
+    $this->db->query(sprintf("UPDATE %s SET price=%f WHERE product_option_value_id = %d",
+      DB_PREFIX."product_option_value", (float)$price, (int)$optionValueId));
+  }
+
+  public function getDiscontractProductsForCurrentCart($cartId) {
+    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE session_id = '%s' AND discontract_item IS NOT NULL", DB_PREFIX."cart", $cartId));
+    return $query->rows;
+  }
+
   public function getDiscontractProducsByProductId($productId, $discontractCategoryId) {
     $language = (int)$this->config->get('config_language_id');
     $query = $this->db->query(sprintf("SELECT * FROM %s WHERE product_id = %d", DB_PREFIX."product", (int)$productId));
@@ -25,7 +54,10 @@ class ModelExtensionDiscontractCart extends Model {
       foreach ($productsInCategory as $productInCategory) {
         foreach ($discontractProductsCategories as $discontractProductCategory) {
           if ($productInCategory['product_id'] === $discontractProductCategory['product_id']) {
-            $products[] = $this->getProduct((int)$discontractProductCategory['product_id']);
+            $product = $this->getProduct((int)$discontractProductCategory['product_id']);
+            if (array_key_exists('status', $product) && $product['status'] == 1) {
+              $products[] = $product;
+            }
             // $products[] = $productInCategory['product_id'];
           }
         }
