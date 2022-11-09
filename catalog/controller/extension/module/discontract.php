@@ -104,7 +104,7 @@ class ControllerExtensionModuleDiscontract extends Controller {
     $this->cart->add($discontractCart->productId, $quantity, $options);
     $cartRowId = $this->db->getLastId();
     // var_dump($cartId);
-    $this->model_extension_discontract_cart->setDiscontractItemInfo($cartRowId, $discontractCartEncoded);
+    $this->model_extension_discontract_cart->setDiscontractItemInfo($cartRowId, $discontractCartEncoded, $this->request->post['product_id']);
     $this->syncDiscontractCart();
   }
 }

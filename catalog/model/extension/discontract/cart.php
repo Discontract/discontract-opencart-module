@@ -7,10 +7,14 @@ class ModelExtensionDiscontractCart extends Model {
     return $query->row;
   }
 
-  public function setDiscontractItemInfo($cartId, $info) {
+  public function setDiscontractItemInfo($cartId, $info, $parentId = false) {
     // $session = $this->db->escape($this->session->getId());
     $this->db->query(sprintf("UPDATE %s SET discontract_item='%s' WHERE cart_id = %d",
       DB_PREFIX."cart", $this->db->escape($info), (int)$cartId));
+    if ($parentId) {
+      $this->db->query(sprintf("UPDATE %s SET parent_product_id=%d WHERE cart_id = %d",
+        DB_PREFIX."cart", (int)$parentId, (int)$cartId));
+    }
   }
 
   public function detachDiscontractCart($cartId) {
