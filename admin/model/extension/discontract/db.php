@@ -16,6 +16,7 @@ class ModelExtensionDiscontractDb extends Model
     $this->db->query("
     CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "discontract_cart` (
         `opencart_cart_id` VARCHAR(255) NOT NULL,
+        `order_id` INT(11),
         `discontract_cart_id` VARCHAR(255) NOT NULL,
         `status` VARCHAR(255) NOT NULL,
         PRIMARY KEY (`discontract_cart_id`)

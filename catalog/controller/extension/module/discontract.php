@@ -20,6 +20,15 @@ class ControllerExtensionModuleDiscontract extends Controller {
     }
 	}
   
+  public function orderHistoryAdd(&$route, &$args) {
+    // $orderId = $args[0];
+    // $statusId = $args[1];
+    // $cartId = $this->db->escape($this->session->getId());
+    // // get cart by cart id and if order_id is not set, set orderid
+    // var_dump($cartId);
+    // die('test');
+  }
+  
   public function locations() {
     $postCode = $this->request->post['postCode'];
     $this->load->model('extension/discontract/api');

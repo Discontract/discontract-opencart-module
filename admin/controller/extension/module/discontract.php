@@ -7,6 +7,8 @@ class ControllerExtensionModuleDiscontract extends Controller {
 		$this->load->model('setting/event');
 		$this->model_setting_event->addEvent('discontract_add_to_cart', 'catalog/controller/checkout/cart/add/after', 'extension/module/discontract/addToCart');
 		$this->model_setting_event->addEvent('discontract_view_cart', 'catalog/controller/checkout/cart/before', 'extension/module/discontract/syncDiscontractCart');
+		$this->model_setting_event->addEvent('discontract_history_add', 'catalog/model/checkout/order/addOrderHistory/after', 'extension/module/discontract/orderHistoryAdd');
+		// $this->model_setting_event->addEvent('discontract_checkout_success', 'catalog/controller/checkout/success/after', 'extension/module/discontract/purchase');
 		// $this->model_setting_event->addEvent('discontract_edit_cart', 'catalog/controller/checkout/cart/edit/after', 'extension/module/discontract/editCartItem');
 		// $this->model_setting_event->addEvent('discontract_remove_cart', 'catalog/controller/checkout/cart/edit/after', 'extension/module/discontract/removeCartItem');
 	}
@@ -17,6 +19,8 @@ class ControllerExtensionModuleDiscontract extends Controller {
 		$this->load->model('setting/event');
 		$this->model_setting_event->deleteEventByCode('discontract_add_to_cart');
 		$this->model_setting_event->deleteEventByCode('discontract_view_cart');
+		$this->model_setting_event->deleteEventByCode('discontract_history_add');
+		// $this->model_setting_event->deleteEventByCode('discontract_checkout_success');
 		// $this->model_setting_event->deleteEventByCode('discontract_edit_cart');
 		// $this->model_setting_event->deleteEventByCode('discontract_remove_cart');
 	}
