@@ -15,6 +15,10 @@ class ModelExtensionDiscontractCart extends Model {
   public function updateCartStatus($discontractCartId, $status) {
     $this->db->query(sprintf("UPDATE %s SET status = '%s' WHERE discontract_cart_id = '%s'", DB_PREFIX."discontract_cart", $this->db->escape($status), $this->db->escape($discontractCartId)));
   }
+  
+  public function updateCartItemOptions($cartRowId, $options) {
+    $this->db->query(sprintf("UPDATE %s SET `option` = '%s' WHERE cart_id = %d", DB_PREFIX."cart", $this->db->escape(json_encode($options)), (int)$cartRowId));
+  }
 
   public function attachOrderIdToDiscontractCart($cartId, $orderId) {
     // check if cart is allready attached to order
@@ -95,6 +99,11 @@ class ModelExtensionDiscontractCart extends Model {
     return $products;
   }
 
+	public function getLastCartItem($sessionId) {
+		$cart_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "cart WHERE session_id = '" . $this->db->escape($sessionId) . "' ORDER BY date_added DESC");
+		return $cart_query->rows[0];
+	}
+
   public function addOptionValue($discontract_product_id, $address, $price, $quantity) {
     $language = (int)$this->config->get('config_language_id');
     $query = $this->db->query(sprintf("SELECT * FROM %s WHERE type = 'discontract_arrival_cost'", DB_PREFIX."option"));
@@ -126,7 +135,7 @@ class ModelExtensionDiscontractCart extends Model {
     if ($query->row) {
       $product_option_id = $query->row['product_option_id'];
     } else {
-      $this->db->query(sprintf("INSERT INTO %s SET product_id=%d, option_id=%d, required=1", DB_PREFIX."product_option", $discontract_product_id, $option_id));
+      $this->db->query(sprintf("INSERT INTO %s SET product_id=%d, option_id=%d, required=0", DB_PREFIX."product_option", $discontract_product_id, $option_id));
       $product_option_id = $this->db->getLastId();
     }
   

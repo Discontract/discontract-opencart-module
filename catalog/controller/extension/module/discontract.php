@@ -7,9 +7,22 @@ class ControllerExtensionModuleDiscontract extends Controller {
     $productId = (int)$this->request->get['product_id'];
     $this->load->model('setting/setting');
     $products = $this->model_extension_discontract_cart->getDiscontractProducsByProductId($productId, $discontractCategory);
-    // var_dump($products);
-    if (count($products) > 0) {
+    // var_dump($productId, $products[0]['product_id'], count($products));
+    if (count($products) === 1 && (int)$products[0]['product_id'] === (int)$productId) {
+      // this is discontract product page
       $data = array();
+      $data['product'] = $this->model_extension_discontract_cart->getProduct($productId);
+      $data['jobs'] = $products;
+      $data['jobs'][0]['selected'] = 'checked';
+      $data['isDiscontractProduct'] = 1;
+      for ($i = 0; $i < count($data['jobs']); $i++) {
+        $data['jobs'][$i]['price'] = '0.00';
+        $data['jobs'][$i]['name'] = 'Atvykimo mokestis';
+      }
+      return $this->load->view('extension/module/discontract', $data);
+    } else if (count($products) > 0) {
+      $data = array();
+      $data['isDiscontractProduct'] = 0;
       $data['product'] = $this->model_extension_discontract_cart->getProduct($productId);
       $data['jobs'] = $products;
       $data['jobs'][0]['selected'] = 'checked';
@@ -143,18 +156,40 @@ class ControllerExtensionModuleDiscontract extends Controller {
       return;
     }
     $discontractCart = json_decode($discontractCartEncoded);
+    $productId = $this->request->post['product_id'];
 
     $this->load->model('extension/discontract/cart');
-    $options = $this->model_extension_discontract_cart->addOptionValue(
-      $discontractCart->productId,
-      $discontractCart->location->description,
-      $discontractCart->price->arrivalCost / 100,
-      $quantity
-    );
-    $this->cart->add($discontractCart->productId, $quantity, $options);
-    $cartRowId = $this->db->getLastId();
+    $product = $this->model_extension_discontract_cart->getProduct($productId);
+    $isDiscontractProduct = false;
+    if ($product['discontract_job_id']) {
+      $isDiscontractProduct = true;
+    }
+    $cartId = $this->db->escape($this->session->getId());
+    $parentCartRow = $this->model_extension_discontract_cart->getLastCartItem($cartId);
+    $parentCartRowId = $parentCartRow['cart_id'];
+    if (!$isDiscontractProduct) {
+      $options = $this->model_extension_discontract_cart->addOptionValue(
+        $discontractCart->productId,
+        $discontractCart->location->description,
+        $discontractCart->price->arrivalCost / 100,
+        $quantity
+      );
+      $this->cart->add($discontractCart->productId, $quantity, $options);
+      $cartRowId = $this->db->getLastId();
+    } else {
+      $options = $this->model_extension_discontract_cart->addOptionValue(
+        $productId,
+        $discontractCart->location->description,
+        $discontractCart->price->arrivalCost / 100,
+        $quantity
+      );
+      $this->model_extension_discontract_cart->updateCartItemOptions($parentCartRowId, $options);
+      // update options
+      $cartRowId = $parentCartRowId;
+      $parentCartRowId = null;
+    }
     // var_dump($cartId);
-    $this->model_extension_discontract_cart->setDiscontractItemInfo($cartRowId, $discontractCartEncoded, $this->request->post['product_id']);
+    $this->model_extension_discontract_cart->setDiscontractItemInfo($cartRowId, $discontractCartEncoded, $parentCartRowId);
     $this->syncDiscontractCart();
   }
 }

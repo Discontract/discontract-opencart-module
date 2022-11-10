@@ -108,6 +108,7 @@
   const DISCONTRACT_MODULE_LINK = "{{'index.php?route=extension/module/discontract/'}}";
   const DISCONTRACT_PRODUCT_ID = {{product.product_id}};
   const DISCONTRACT_PRODUCT_NAME = "{{product.name}}";
+  const IS_DISCONTRACT_PRODUCT = {{isDiscontractProduct}};
 </script>
 <!-- /Block discontractpro -->
 
@@ -169,7 +170,11 @@ const DISCONTRACT_MODULE = function() {
             document.getElementById('discontract_cart').value = JSON.stringify(result);
             $('#button-cart').prop('disabled', false);
             $priceBlock.css('display', 'inline');
-            $priceBlock.find('.discontract-price').text((result.price.total / 100).toFixed(2) + ' €');
+            if (IS_DISCONTRACT_PRODUCT) {
+              $priceBlock.find('.discontract-price').text((result.price.arrivalCost / 100).toFixed(2) + ' €');
+            } else {
+              $priceBlock.find('.discontract-price').text((result.price.total / 100).toFixed(2) + ' €');
+            }
             document.getElementById('disc-postcode-input').value = item.postCode + ' - ' + item.description;
             document.getElementById('discontract-loader').style.display = 'none';
           });
@@ -237,6 +242,12 @@ const DISCONTRACT_MODULE = function() {
 if (typeof DISCONTRACT_MODULE_LINK !== 'undefined') {
   $(document).ready(() => {
     DISCONTRACT_MODULE();
+    if (IS_DISCONTRACT_PRODUCT) {
+      $('#button-cart').prop('disabled', true);
+      $('#discontract-job-check').prop('checked', true);
+      $('#discontract-job-check')[0].dispatchEvent(new Event('change'));
+      $('.discontract-header').hide();
+    }
   });
 }
 </script>
