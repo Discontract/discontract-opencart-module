@@ -21,12 +21,53 @@ class ControllerExtensionModuleDiscontract extends Controller {
 	}
   
   public function orderHistoryAdd(&$route, &$args) {
-    // $orderId = $args[0];
-    // $statusId = $args[1];
-    // $cartId = $this->db->escape($this->session->getId());
-    // // get cart by cart id and if order_id is not set, set orderid
-    // var_dump($cartId);
-    // die('test');
+    $orderId = $args[0];
+    $statusId = $args[1];
+    $cartId = $this->db->escape($this->session->getId());
+    $this->load->model('extension/discontract/cart');
+    $discontractCart = $this->model_extension_discontract_cart->attachOrderIdToDiscontractCart($cartId, $orderId);
+    if (!$discontractCart) {
+      return;
+    }
+    $discontractCartId = $discontractCart['discontract_cart_id'];
+    $this->load->model('extension/discontract/api');
+    $purchasedStates = $this->config->get('module_discontract_statuses_purchased');
+    $deliveredStates = $this->config->get('module_discontract_statuses_delivered');
+    $data = $this->model_extension_discontract_cart->getOrderInfo($orderId);
+    if (in_array((string)$statusId, $purchasedStates)) { // car purchased
+      $request = new stdClass();
+      $request->billingDetails = new stdClass();
+      $request->contactDetails = new stdClass();
+      $request->comment = "";
+      $request->billingDetails->firstName =  $data['payment_firstname'];
+      $request->billingDetails->lastName = $data['payment_lastname'];
+      $request->billingDetails->companyName = $data['payment_company'];
+      // $request->billingDetails->businessCode = $data['dni'];
+      // $request->billingDetails->vatCode = $data['vat_number'];
+
+      $request->contactDetails->firstName = $data['firstname'];
+      $request->contactDetails->lastName = $data['lastname'];
+      $value = $data['telephone'];
+      $value = preg_replace("/[^0-9]/", "", $value);
+      $value = preg_replace('/\s+/', '', $value);
+      if (substr($value, 0, 1) == '8') {
+        $value = '+370'.substr($value, 1);
+      } else if (substr($value, 0, 3) == '370') {
+        $value = '+'.$value;
+      }
+      $request->contactDetails->phoneNumber = $value;
+      $request->contactDetails->email = $data['email'];
+      if ($discontractCart["status"] === 'reserved') {
+        $response = $this->model_extension_discontract_api->purchaseCart($discontractCartId, $request);
+        $this->model_extension_discontract_cart->updateCartStatus($discontractCartId, $response->status);
+      }
+    } else if (in_array((string)$statusId, $deliveredStates)) { // issiusta
+      if ($discontractCart["status"] === 'purchased') {
+        $time = time() * 1000 + 3600 * 48 * 1000;
+        $response = $this->model_extension_discontract_api->deliverCart($discontractCartId, $time);
+        $this->model_extension_discontract_cart->updateCartStatus($discontractCartId, $response->status);
+      }
+    }
   }
   
   public function locations() {

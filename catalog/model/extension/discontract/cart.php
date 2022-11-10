@@ -7,6 +7,31 @@ class ModelExtensionDiscontractCart extends Model {
     return $query->row;
   }
 
+  public function getOrderInfo($orderId) {
+    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE order_id = %d", DB_PREFIX."order", (int)$orderId));
+    return $query->row;
+  }
+
+  public function updateCartStatus($discontractCartId, $status) {
+    $this->db->query(sprintf("UPDATE %s SET status = '%s' WHERE discontract_cart_id = '%s'", DB_PREFIX."discontract_cart", $this->db->escape($status), $this->db->escape($discontractCartId)));
+  }
+
+  public function attachOrderIdToDiscontractCart($cartId, $orderId) {
+    // check if cart is allready attached to order
+    // check if cart session exists
+    // attach to order if so
+    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE order_id = %d", DB_PREFIX."discontract_cart", (int)$orderId));
+    if ($query->row) {
+      return $query->row;
+    }
+    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE opencart_cart_id = '%s'", DB_PREFIX."discontract_cart", $this->db->escape($cartId)));
+    if ($query->row) {
+      $this->db->query(sprintf("UPDATE %s SET order_id = %d WHERE opencart_cart_id = '%s'", DB_PREFIX."discontract_cart", (int)$orderId, $this->db->escape($cartId)));
+      return $query->row;
+    }
+    return false;
+  }
+
   public function setDiscontractItemInfo($cartId, $info, $parentId = false) {
     // $session = $this->db->escape($this->session->getId());
     $this->db->query(sprintf("UPDATE %s SET discontract_item='%s' WHERE cart_id = %d",
