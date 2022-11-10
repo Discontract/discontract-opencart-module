@@ -17,7 +17,7 @@ class ControllerExtensionModuleDiscontract extends Controller {
       $data['isDiscontractProduct'] = 1;
       for ($i = 0; $i < count($data['jobs']); $i++) {
         $data['jobs'][$i]['price'] = '0.00';
-        $data['jobs'][$i]['name'] = 'Atvykimo mokestis';
+        $data['jobs'][$i]['name'] = $this->language->data['arrival_cost'];
       }
       return $this->load->view('extension/module/discontract', $data);
     } else if (count($products) > 0) {
