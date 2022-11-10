@@ -24,9 +24,9 @@ class ModelExtensionDiscontractCart extends Model {
     if ($query->row) {
       return $query->row;
     }
-    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE opencart_cart_id = '%s'", DB_PREFIX."discontract_cart", $this->db->escape($cartId)));
+    $query = $this->db->query(sprintf("SELECT * FROM %s WHERE opencart_cart_id = '%s' AND order_id is NULL", DB_PREFIX."discontract_cart", $this->db->escape($cartId)));
     if ($query->row) {
-      $this->db->query(sprintf("UPDATE %s SET order_id = %d WHERE opencart_cart_id = '%s'", DB_PREFIX."discontract_cart", (int)$orderId, $this->db->escape($cartId)));
+      $this->db->query(sprintf("UPDATE %s SET order_id = %d WHERE opencart_cart_id = '%s' AND order_id is NULL", DB_PREFIX."discontract_cart", (int)$orderId, $this->db->escape($cartId)));
       return $query->row;
     }
     return false;
@@ -43,7 +43,7 @@ class ModelExtensionDiscontractCart extends Model {
   }
 
   public function detachDiscontractCart($cartId) {
-    $this->db->query(sprintf("DELETE FROM %s WHERE opencart_cart_id='%s'",
+    $this->db->query(sprintf("DELETE FROM %s WHERE opencart_cart_id='%s' AND order_id is NULL",
       DB_PREFIX."discontract_cart", $this->db->escape($cartId)));
   }
 
