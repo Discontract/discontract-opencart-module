@@ -102,7 +102,7 @@ class ControllerExtensionModuleDiscontract extends Controller {
     $response = $this->model_extension_discontract_api->getPriceQuote($jobId, array("location" => $address));
     $response->jobId = $jobId;
     $response->location = $address;
-    die(json_encode($response));
+    //die(json_encode($response));
     $this->response->addHeader('Content-Type: application/json');
     $this->response->setOutput(json_encode($response));
   }
