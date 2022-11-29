@@ -79,6 +79,7 @@ class ModelExtensionDiscontractCart extends Model {
     $products = array();
     $productCategories = ($this->db->query(sprintf("SELECT * FROM %s WHERE product_id = %d", DB_PREFIX."product_to_category", (int)$productId)))->rows;
     $discontractProductsCategories = ($this->db->query(sprintf("SELECT * FROM %s WHERE category_id = %d", DB_PREFIX."product_to_category", (int)$discontractCategoryId)))->rows;
+    $addedProducts = array();
     foreach ($productCategories as $category) {
       if ((int)$category['category_id'] === (int)$discontractCategoryId) {
         continue;
@@ -88,7 +89,8 @@ class ModelExtensionDiscontractCart extends Model {
         foreach ($discontractProductsCategories as $discontractProductCategory) {
           if ($productInCategory['product_id'] === $discontractProductCategory['product_id']) {
             $product = $this->getProduct((int)$discontractProductCategory['product_id']);
-            if (array_key_exists('status', $product) && $product['status'] == 1) {
+            if (array_key_exists('status', $product) && $product['status'] == 1 && !array_key_exists($product['product_id'], $addedProducts)) {
+              $addedProducts[$product['product_id']] = true;
               $products[] = $product;
             }
             // $products[] = $productInCategory['product_id'];
