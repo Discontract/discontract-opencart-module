@@ -55,7 +55,21 @@
   display:none;
   position:absolute;
   right: 50px;
-  top:17px
+  top:15px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(0,0,0,0.4);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: disco 1s linear infinite;
+  -webkit-animation: disco 1s linear infinite;
+}
+
+@keyframes disco {
+  to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes disco {
+  to { -webkit-transform: rotate(360deg); }
 }
 
 #disc-postcode-autocomplete {
@@ -97,7 +111,7 @@
     <div id="disc-postcode-block">
       <div class="disc-postcode-container">
         <input autocomplete="off" id="disc-postcode-input" placeholder="{{address_placeholder}}" type="text" name="post_code" />
-        <i id="discontract-loader" class="fa fa-circle-o-notch fa-spin fa-fw spinner-icon"></i>
+        <div id="discontract-loader"></div>
       </div>
       <ul id="disc-postcode-autocomplete">
       </ul>
